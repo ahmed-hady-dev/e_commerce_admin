@@ -77,13 +77,13 @@ class NewProductScreen extends StatelessWidget {
               const SizedBox(height: 10.0),
               _buildSlider(
                 title: 'Price',
-                name: 'Price',
+                name: 'price',
                 productController: productController,
                 controllerValue: productController.price,
               ),
               _buildSlider(
                 title: 'Quantity',
-                name: 'Quantity',
+                name: 'quantity',
                 productController: productController,
                 controllerValue: productController.quantity,
               ),
