@@ -1,4 +1,7 @@
 import 'package:e_commerce_admin/controllers/product_controller.dart';
+import 'package:e_commerce_admin/models/product_model.dart';
+import 'package:e_commerce_admin/services/datebase_service.dart';
+import 'package:e_commerce_admin/services/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,6 +10,8 @@ class NewProductScreen extends StatelessWidget {
   NewProductScreen({Key? key}) : super(key: key);
 
   final ProductController productController = Get.find();
+  StorageService storage = StorageService();
+  DatabaseService databaseService = DatabaseService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +44,16 @@ class NewProductScreen extends StatelessWidget {
                                 ),
                               );
                             }
-                            if (_image == null) {}
+                            if (_image != null) {
+                              await storage.uploadImage(_image);
+                              var imageUrl = await storage.getDownloadUrl(_image.name);
+                              productController.newProduct.update(
+                                'imageUrl',
+                                (_) => imageUrl,
+                                ifAbsent: () => imageUrl,
+                              );
+                              print(productController.newProduct['imageUrl']);
+                            }
                           },
                           icon: const Icon(Icons.add_circle, color: Colors.white)),
                       const Text('Add an Image',
@@ -104,6 +118,19 @@ class NewProductScreen extends StatelessWidget {
                   child: ElevatedButton(
                       onPressed: () {
                         print(productController.newProduct);
+                        databaseService.addProduct(
+                          Product(
+                            id: productController.newProduct['id'],
+                            name: productController.newProduct['name'],
+                            category: productController.newProduct['category'],
+                            description: productController.newProduct['description'],
+                            imageUrl: productController.newProduct['imageUrl'],
+                            quantity: productController.newProduct['quantity'].toInt(),
+                            price: productController.newProduct['price'],
+                            isRecommended: productController.newProduct['isRecommended'],
+                            isPopular: productController.newProduct['isPopular'],
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(primary: Colors.black),
                       child: const Text('Save', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)))),
