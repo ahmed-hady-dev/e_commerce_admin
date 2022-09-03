@@ -41,15 +41,19 @@ class ProductsScreen extends StatelessWidget {
                     ),
                   )),
               Expanded(
-                  child: ListView.builder(
-                itemCount: productController.products.length,
-                itemBuilder: (context, index) {
-                  return Obx(() => SizedBox(
+                child: Obx(
+                  () => ListView.builder(
+                    itemCount: productController.products.length,
+                    itemBuilder: (context, index) {
+                      return SizedBox(
                         height: 210.0,
+                        // child: Text('text', style: const TextStyle()),
                         child: ProductCard(product: productController.products[index], index: index),
-                      ));
-                },
-              ))
+                      );
+                    },
+                  ),
+                ),
+              ),
             ],
           )),
     );
@@ -68,6 +72,7 @@ class ProductCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
               product.name,
@@ -86,6 +91,7 @@ class ProductCard extends StatelessWidget {
                   width: 80.0,
                   child: Image.network(product.imageUrl, fit: BoxFit.cover),
                 ),
+                const SizedBox(width: 8.0),
                 Expanded(
                   child: Column(
                     children: <Widget>[
@@ -109,6 +115,9 @@ class ProductCard extends StatelessWidget {
                               inactiveColor: Colors.black12,
                               onChanged: (value) {
                                 productController.updateProductPrice(index, product, value);
+                              },
+                              onChangeEnd: (value) {
+                                productController.saveNewProductPrice(product, 'price', value);
                               },
                             ),
                           ),
@@ -138,6 +147,9 @@ class ProductCard extends StatelessWidget {
                               inactiveColor: Colors.black12,
                               onChanged: (value) {
                                 productController.updateProductQuantity(index, product, value.toInt());
+                              },
+                              onChangeEnd: (value) {
+                                productController.saveNewProductQuantity(product, 'quantity', value.toInt());
                               },
                             ),
                           ),

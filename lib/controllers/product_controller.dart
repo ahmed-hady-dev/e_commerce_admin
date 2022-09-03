@@ -1,10 +1,19 @@
+import 'package:e_commerce_admin/services/datebase_service.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 
 import '../models/product_model.dart';
 
 class ProductController extends GetxController {
-  List<Product> products = Product.products.obs;
+  final DatabaseService database = DatabaseService();
+
+  var products = <Product>[].obs;
+
+  @override
+  void onInit() {
+    products.bindStream(database.getProducts());
+    super.onInit();
+  }
 
   var newProduct = {}.obs;
   get price => newProduct['price'];
@@ -17,8 +26,24 @@ class ProductController extends GetxController {
     products[index] = product;
   }
 
+  void saveNewProductPrice(
+    Product product,
+    String field,
+    double value,
+  ) {
+    database.updateField(product, field, value);
+  }
+
   void updateProductQuantity(int index, Product product, int value) {
     product.quantity = value;
     products[index] = product;
+  }
+
+  void saveNewProductQuantity(
+    Product product,
+    String field,
+    int value,
+  ) {
+    database.updateField(product, field, value);
   }
 }

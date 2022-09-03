@@ -23,118 +23,120 @@ class NewProductScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Obx(
-          () => Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              SizedBox(
-                height: 100,
-                child: Card(
-                  color: Colors.black,
-                  margin: EdgeInsets.zero,
-                  child: Row(
-                    children: [
-                      IconButton(
-                          onPressed: () async {
-                            ImagePicker _picker = ImagePicker();
-                            final XFile? _image = await _picker.pickImage(source: ImageSource.gallery);
-                            if (_image == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('No Image was Selected', style: TextStyle()),
-                                ),
-                              );
-                            }
-                            if (_image != null) {
-                              await storage.uploadImage(_image);
-                              var imageUrl = await storage.getDownloadUrl(_image.name);
-                              productController.newProduct.update(
-                                'imageUrl',
-                                (_) => imageUrl,
-                                ifAbsent: () => imageUrl,
-                              );
-                              print(productController.newProduct['imageUrl']);
-                            }
-                          },
-                          icon: const Icon(Icons.add_circle, color: Colors.white)),
-                      const Text('Add an Image',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
-                    ],
+          () => SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(
+                  height: 100,
+                  child: Card(
+                    color: Colors.black,
+                    margin: EdgeInsets.zero,
+                    child: Row(
+                      children: [
+                        IconButton(
+                            onPressed: () async {
+                              ImagePicker _picker = ImagePicker();
+                              final XFile? _image = await _picker.pickImage(source: ImageSource.gallery);
+                              if (_image == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('No Image was Selected', style: TextStyle()),
+                                  ),
+                                );
+                              }
+                              if (_image != null) {
+                                await storage.uploadImage(_image);
+                                var imageUrl = await storage.getDownloadUrl(_image.name);
+                                productController.newProduct.update(
+                                  'imageUrl',
+                                  (_) => imageUrl,
+                                  ifAbsent: () => imageUrl,
+                                );
+                                print(productController.newProduct['imageUrl']);
+                              }
+                            },
+                            icon: const Icon(Icons.add_circle, color: Colors.white)),
+                        const Text('Add an Image',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 20.0),
-              const Text('Product Information',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  )),
-              buildTextFormField(
-                hintText: 'Product ID',
-                productController: productController,
-                name: 'id',
-              ),
-              buildTextFormField(
-                hintText: 'Product Name',
-                productController: productController,
-                name: 'name',
-              ),
-              buildTextFormField(
-                hintText: 'Product Description',
-                productController: productController,
-                name: 'description',
-              ),
-              buildTextFormField(
-                hintText: 'Product Category',
-                productController: productController,
-                name: 'category',
-              ),
-              const SizedBox(height: 10.0),
-              _buildSlider(
-                title: 'Price',
-                name: 'price',
-                productController: productController,
-                controllerValue: productController.price,
-              ),
-              _buildSlider(
-                title: 'Quantity',
-                name: 'quantity',
-                productController: productController,
-                controllerValue: productController.quantity,
-              ),
-              const SizedBox(height: 10.0),
-              _buildCheckbox(
-                title: 'Recommended',
-                name: 'isRecommended',
-                productController: productController,
-                controllerValue: productController.isRecommended,
-              ),
-              _buildCheckbox(
-                title: 'Popular',
-                name: 'isPopular',
-                productController: productController,
-                controllerValue: productController.isPopular,
-              ),
-              Center(
-                  child: ElevatedButton(
-                      onPressed: () {
-                        print(productController.newProduct);
-                        databaseService.addProduct(
-                          Product(
-                            id: productController.newProduct['id'],
-                            name: productController.newProduct['name'],
-                            category: productController.newProduct['category'],
-                            description: productController.newProduct['description'],
-                            imageUrl: productController.newProduct['imageUrl'],
-                            quantity: productController.newProduct['quantity'].toInt(),
-                            price: productController.newProduct['price'],
-                            isRecommended: productController.newProduct['isRecommended'],
-                            isPopular: productController.newProduct['isPopular'],
-                          ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(primary: Colors.black),
-                      child: const Text('Save', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)))),
-            ],
+                const SizedBox(height: 20.0),
+                const Text('Product Information',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    )),
+                buildTextFormField(
+                  hintText: 'Product ID',
+                  productController: productController,
+                  name: 'id',
+                ),
+                buildTextFormField(
+                  hintText: 'Product Name',
+                  productController: productController,
+                  name: 'name',
+                ),
+                buildTextFormField(
+                  hintText: 'Product Description',
+                  productController: productController,
+                  name: 'description',
+                ),
+                buildTextFormField(
+                  hintText: 'Product Category',
+                  productController: productController,
+                  name: 'category',
+                ),
+                const SizedBox(height: 10.0),
+                _buildSlider(
+                  title: 'Price',
+                  name: 'price',
+                  productController: productController,
+                  controllerValue: productController.price,
+                ),
+                _buildSlider(
+                  title: 'Quantity',
+                  name: 'quantity',
+                  productController: productController,
+                  controllerValue: productController.quantity,
+                ),
+                const SizedBox(height: 10.0),
+                _buildCheckbox(
+                  title: 'Recommended',
+                  name: 'isRecommended',
+                  productController: productController,
+                  controllerValue: productController.isRecommended,
+                ),
+                _buildCheckbox(
+                  title: 'Popular',
+                  name: 'isPopular',
+                  productController: productController,
+                  controllerValue: productController.isPopular,
+                ),
+                Center(
+                    child: ElevatedButton(
+                        onPressed: () {
+                          print(productController.newProduct);
+                          databaseService.addProduct(
+                            Product(
+                              id: int.parse(productController.newProduct['id']),
+                              name: productController.newProduct['name'],
+                              category: productController.newProduct['category'],
+                              description: productController.newProduct['description'],
+                              imageUrl: productController.newProduct['imageUrl'],
+                              quantity: productController.newProduct['quantity'].toInt(),
+                              price: productController.newProduct['price'],
+                              isRecommended: productController.newProduct['isRecommended'],
+                              isPopular: productController.newProduct['isPopular'],
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(primary: Colors.black),
+                        child: const Text('Save', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)))),
+              ],
+            ),
           ),
         ),
       ),
