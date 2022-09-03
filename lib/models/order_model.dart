@@ -4,19 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
 class Order extends Equatable {
-  @override
-  List<Object?> get props => [
-        id,
-        customerId,
-        productIds,
-        deliveryFee,
-        subtotal,
-        total,
-        isAccepted,
-        isDelivered,
-        createdAt,
-      ];
-
   final int id;
   final int customerId;
   final List<int> productIds;
@@ -25,6 +12,7 @@ class Order extends Equatable {
   final double total;
   final bool isAccepted;
   final bool isDelivered;
+  final bool isCancelled;
   final DateTime createdAt;
 
   const Order({
@@ -36,6 +24,7 @@ class Order extends Equatable {
     required this.total,
     required this.isAccepted,
     required this.isDelivered,
+    required this.isCancelled,
     required this.createdAt,
   });
 
@@ -48,6 +37,7 @@ class Order extends Equatable {
     double? total,
     bool? isAccepted,
     bool? isDelivered,
+    bool? isCancelled,
     DateTime? createdAt,
   }) {
     return Order(
@@ -59,6 +49,7 @@ class Order extends Equatable {
       total: total ?? this.total,
       isAccepted: isAccepted ?? this.isAccepted,
       isDelivered: isDelivered ?? this.isDelivered,
+      isCancelled: isCancelled ?? this.isCancelled,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -73,27 +64,46 @@ class Order extends Equatable {
       'total': total,
       'isAccepted': isAccepted,
       'isDelivered': isDelivered,
-      'createdAt': createdAt,
+      'isCancelled': isCancelled,
+      'createdAt': createdAt.millisecondsSinceEpoch,
     };
   }
 
   factory Order.fromSnapshot(DocumentSnapshot snap) {
     return Order(
-      id: snap['id'] as int,
-      customerId: snap['customerId'] as int,
-      productIds: snap['productIds'] as List<int>,
-      deliveryFee: snap['deliveryFee'] as double,
-      subtotal: snap['subtotal'] as double,
-      total: snap['total'] as double,
-      isAccepted: snap['isAccepted'] as bool,
-      isDelivered: snap['isDelivered'] as bool,
-      createdAt: DateTime.fromMicrosecondsSinceEpoch(snap['createdAt']),
+      id: snap['id'],
+      customerId: snap['customerId'],
+      productIds: List<int>.from(snap['productIds']),
+      deliveryFee: snap['deliveryFee'],
+      subtotal: snap['subtotal'],
+      total: snap['total'],
+      isAccepted: snap['isAccepted'],
+      isDelivered: snap['isDelivered'],
+      isCancelled: snap['isCancelled'],
+      createdAt: snap['createdAt'].toDate(),
     );
   }
 
   String toJson() => json.encode(toMap());
+
   @override
-  bool? get stringify => true;
+  bool get stringify => true;
+
+  @override
+  List<Object> get props {
+    return [
+      id,
+      customerId,
+      productIds,
+      deliveryFee,
+      subtotal,
+      total,
+      isAccepted,
+      isDelivered,
+      isCancelled,
+      createdAt,
+    ];
+  }
 
   static List<Order> orders = [
     Order(
@@ -105,6 +115,7 @@ class Order extends Equatable {
       total: 30,
       isAccepted: false,
       isDelivered: false,
+      isCancelled: false,
       createdAt: DateTime.now(),
     ),
     Order(
@@ -116,6 +127,7 @@ class Order extends Equatable {
       total: 30,
       isAccepted: false,
       isDelivered: false,
+      isCancelled: false,
       createdAt: DateTime.now(),
     ),
   ];

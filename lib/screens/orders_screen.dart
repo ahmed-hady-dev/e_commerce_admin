@@ -1,11 +1,13 @@
+import 'package:e_commerce_admin/controllers/order_controller.dart';
 import 'package:e_commerce_admin/models/order_model.dart';
 import 'package:e_commerce_admin/models/product_model.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class OrdersScreen extends StatelessWidget {
-  const OrdersScreen({Key? key}) : super(key: key);
-
+  OrdersScreen({Key? key}) : super(key: key);
+  final OrderController orderController = Get.put(OrderController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,21 +16,28 @@ class OrdersScreen extends StatelessWidget {
         centerTitle: true,
         backgroundColor: Colors.black,
       ),
-      body: ListView.builder(
-        itemCount: Order.orders.length,
-        itemBuilder: (context, index) {
-          return OrderCard(
-            order: Order.orders[index],
-          );
-        },
-      ),
+      body: orderController.orders.isEmpty
+          ? Center(child: Text('there are no orders', style: const TextStyle()))
+          : Expanded(
+              child: Obx(
+                () => ListView.builder(
+                  itemCount: orderController.pendingOrders.length,
+                  itemBuilder: (context, index) {
+                    return OrderCard(
+                      order: orderController.pendingOrders[index],
+                    );
+                  },
+                ),
+              ),
+            ),
     );
   }
 }
 
 class OrderCard extends StatelessWidget {
-  const OrderCard({Key? key, required this.order}) : super(key: key);
+  OrderCard({Key? key, required this.order}) : super(key: key);
   final Order order;
+  final OrderController orderController = Get.find();
   @override
   Widget build(BuildContext context) {
     var products = Product.products.where((product) => order.productIds.contains(product.id)).toList();
@@ -139,18 +148,35 @@ class OrderCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
+                  order.isAccepted
+                      ? ElevatedButton(
+                          onPressed: () {
+                            orderController.updateOrder(order, 'isDelivered', !order.isDelivered);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.black,
+                            maximumSize: const Size(150, 40),
+                          ),
+                          child: const Text('Deliver',
+                              style: TextStyle(
+                                fontSize: 12.0,
+                              )))
+                      : ElevatedButton(
+                          onPressed: () {
+                            orderController.updateOrder(order, 'isAccepted', !order.isAccepted);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.black,
+                            maximumSize: const Size(150, 40),
+                          ),
+                          child: const Text('Accept',
+                              style: TextStyle(
+                                fontSize: 12.0,
+                              ))),
                   ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.black,
-                        maximumSize: const Size(150, 40),
-                      ),
-                      child: const Text('Accept',
-                          style: TextStyle(
-                            fontSize: 12.0,
-                          ))),
-                  ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        orderController.updateOrder(order, 'isCancelled', !order.isCancelled);
+                      },
                       style: ElevatedButton.styleFrom(
                         primary: Colors.black,
                         maximumSize: const Size(150, 40),
