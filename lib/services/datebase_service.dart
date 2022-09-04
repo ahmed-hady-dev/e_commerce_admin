@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce_admin/models/order_model.dart';
+import 'package:e_commerce_admin/models/order_state_model.dart';
 import 'package:e_commerce_admin/models/product_model.dart';
 
 class DatabaseService {
@@ -66,5 +67,19 @@ class DatabaseService {
         .map((snapShot) {
       return snapShot.docs.map((doc) => Order.fromSnapshot(doc)).toList();
     });
+  }
+
+  Future<List<OrderStats>> getOrderStas() {
+    return _firebaseFirestore
+        .collection('order_stats')
+        .orderBy('dateTime')
+        .get()
+        .then((querySnapshot) => querySnapshot.docs
+            .asMap()
+            .entries
+            .map(
+              (entry) => OrderStats.fromSnapshot(entry.value, entry.key),
+            )
+            .toList());
   }
 }
